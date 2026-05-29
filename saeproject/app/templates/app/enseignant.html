@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Profil enseignant</title>
+</head>
+
+<body>
+
+<h1>Profil Enseignant</h1>
+
+<p>
+    <strong>Nom :</strong>
+    {{ enseignant.nom }}
+</p>
+
+<p>
+    <strong>Prénom :</strong>
+    {{ enseignant.prenom }}
+</p>
+
+<a href="../ajout/etudiant/">Ajouter une étudiant</a>
+<a href="../ajout/notes/?prof_id={{ enseignant.id }}">Ajouter une note</a>
+<a href="../ajout/examens/?prof_id={{ enseignant.id }}">Ajouter un examen</a>
+<a href="../ajout/ue/">Ajouter une UE</a>
+<a href="../ajout/ressource/?prof_id={{ enseignant.id }}">Ajouter une ressource</a>
+
+
+
+{% if etudiant.photo %}
+
+    <img
+        src="{{ etudiant.photo.url }}"
+        width="200"
+    >
+
+{% endif %}
+
+</body>
+
+</html>

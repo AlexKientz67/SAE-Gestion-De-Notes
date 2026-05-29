@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
 
     path('', views.login_etudiant, name='login_etudiant'),
+    path('enseignant/', views.login_enseignant, name='login_enseignant'),
     path('notes/<int:id>/', views.profil_etudiant, name='profil_etudiant'),
     path('ajout/etudiant/', views.ajout_etudiant, name='ajout_etudiant'),
     path('ajout/enseignant/', views.ajout_enseignant, name='ajout_enseignant'),
@@ -12,6 +13,7 @@ urlpatterns = [
     path('ajout/ressource/', views.ajout_ressource, name='ajout_ressource'),
     path('ajout/examens/', views.ajout_examens, name='ajout_examens'),
     path('ajout/notes/', views.ajout_notes, name='ajout_notes'),
+    path('enseignant/<int:id>', views.profil_enseignant, name='enseignant'),
 
 
 

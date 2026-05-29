@@ -32,35 +32,44 @@ def ajout_ue(request):
     )
     if form.is_valid():
         form.save()
-        return redirect('/')
+        return redirect('/app')
     return render(request, 'app/form.html', {'form':form, 'titre': 'Ajouter un ue'})
 
 def ajout_ressource(request):
+    prof_id = request.GET.get('prof_id')
     form = RessourceForm(
         request.POST or None,
     )
     if form.is_valid():
         form.save()
+        if prof_id:
+            return redirect('enseignant', id=prof_id)
         return redirect('/')
-    return render(request, 'app/form.html', {'form':form, 'titre': 'Ajout un ressource'})
+    return render(request, 'app/form.html', {'form':form, 'titre': 'Ajout un ressource', 'prof_id': prof_id})
 
 def ajout_examens(request):
+    prof_id = request.GET.get('prof_id')
     form = ExamenForm(
         request.POST or None,
     )
     if form.is_valid():
         form.save()
+        if prof_id:
+            return redirect('enseignant', id=prof_id)
         return redirect('/')
-    return render(request, 'app/form.html', {'form':form, 'titre': 'Ajout un examen'})
+    return render(request, 'app/form.html', {'form':form, 'titre': 'Ajout un examen', 'prof_id': prof_id})
 
 def ajout_notes(request):
+    prof_id = request.GET.get('prof_id')
     form = NoteForm(
         request.POST or None,
     )
     if form.is_valid():
         form.save()
+        if prof_id:
+            return redirect('enseignant', id=prof_id)
         return redirect('/')
-    return render(request, 'app/form.html', {'form':form, 'titre': 'Ajout un note'})
+    return render(request, 'app/form.html', {'form':form, 'titre': 'Ajout un note', 'prof_id': prof_id})
 
 def modifier_etudiant(request, id):
 
@@ -111,7 +120,6 @@ def login_etudiant(request):
         'form': form
     })
 
-
 def profil_etudiant(request, id):
 
     etudiant = get_object_or_404(
@@ -119,6 +127,42 @@ def profil_etudiant(request, id):
         id=id
     )
 
+    # Récupérer toutes les notes de l'étudiant
+    notes = Note.objects.filter(etudiant=etudiant).select_related('examen__ressource__ue')
+    
+    # Organiser les notes par UE > Ressource
+    notes_par_ue = {}
+    
+    for note in notes:
+        ue = note.examen.ressource.ue
+        ressource = note.examen.ressource
+        
+        if ue not in notes_par_ue:
+            notes_par_ue[ue] = {}
+        
+        if ressource not in notes_par_ue[ue]:
+            notes_par_ue[ue][ressource] = []
+        
+        notes_par_ue[ue][ressource].append(note)
+
     return render(request, 'app/notes.html', {
-        'etudiant': etudiant
+        'etudiant': etudiant,
+        'notes_par_ue': notes_par_ue
+    })
+
+def login_enseignant(request):
+    enseignants = Enseignants.objects.all()
+    
+    return render(request, 'app/login_enseignant.html', {
+        'enseignants': enseignants
+    })
+
+def profil_enseignant(request, id):
+    enseignant = get_object_or_404(
+        Enseignants,
+        id=id
+    )
+
+    return render(request, 'app/enseignant.html', {
+        'enseignant': enseignant
     })

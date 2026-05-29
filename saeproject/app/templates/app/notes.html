@@ -10,33 +10,71 @@
 
 <h1>Profil étudiant</h1>
 
-<p>
-    <strong>Nom :</strong>
-    {{ etudiant.nom }}
-</p>
+<div class="etudiant-info">
+    <p>
+        <strong>Nom :</strong>
+        {{ etudiant.nom }}
+    </p>
 
-<p>
-    <strong>Prénom :</strong>
-    {{ etudiant.prenom }}
-</p>
+    <p>
+        <strong>Prénom :</strong>
+        {{ etudiant.prenom }}
+    </p>
 
-<p>
-    <strong>Groupe :</strong>
-    {{ etudiant.groupe }}
-</p>
+    <p>
+        <strong>Numéro étudiant :</strong>
+        {{ etudiant.numero_etudiant }}
+    </p>
 
-<p>
-    <strong>Email :</strong>
-    {{ etudiant.email }}
-</p>
+    <p>
+        <strong>Groupe :</strong>
+        {{ etudiant.groupe }}
+    </p>
 
-{% if etudiant.photo %}
+    <p>
+        <strong>Email :</strong>
+        {{ etudiant.email }}
+    </p>
 
-    <img
-        src="{{ etudiant.photo.url }}"
-        width="200"
-    >
+    {% if etudiant.photo %}
+        <img
+            src="{{ etudiant.photo.url }}"
+            width="150"
+        >
+    {% endif %}
+</div>
 
+<h2>Résultats</h2>
+
+{% if notes_par_ue %}
+    <ul>
+        {% for ue, ressources in notes_par_ue.items %}
+            <li>
+                <strong>{{ ue.code }} - {{ ue.nom }}</strong> ({{ ue.semestre }}S, {{ ue.credits_ects }} ECTS)
+                <ul>
+                    {% for ressource, notes_list in ressources.items %}
+                        <li>
+                            <strong>{{ ressource.code }} - {{ ressource.nom }}</strong> (Coef: {{ ressource.coefficient }})
+                            {% if ressource.description %}
+                                <p>{{ ressource.description }}</p>
+                            {% endif %}
+                            <ul>
+                                {% for note in notes_list %}
+                                    <li>
+                                        {{ note.examen.title }} - {{ note.examen.date|date:"d/m/Y" }}
+                                        <br>
+                                        Coefficient examen: {{ note.examen.coefficient }} | Note: <strong>{{ note.note }}/20</strong>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucune note disponible pour cet étudiant.</p>
 {% endif %}
 
 </body>

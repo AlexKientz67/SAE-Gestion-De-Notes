@@ -91,7 +91,7 @@ class ExamenForm(forms.ModelForm):
             'title',
             'date',
             'coefficient',
-            'ue'
+            'ressource'
         ]
 
         widgets = {

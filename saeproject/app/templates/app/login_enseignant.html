@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Connexion Enseignant</title>
+</head>
+
+<body>
+
+<h1>Sélectionner un enseignant</h1>
+
+{% if enseignants %}
+    <ul>
+        {% for enseignant in enseignants %}
+            <li>
+                <a href="{% url 'enseignant' enseignant.id %}">
+                    {{ enseignant.prenom }} {{ enseignant.nom }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucun enseignant disponible.</p>
+{% endif %}
+
+</body>
+
+</html>

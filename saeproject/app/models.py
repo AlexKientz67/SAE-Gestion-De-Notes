@@ -45,7 +45,7 @@ class Examen(models.Model):
     date = models.DateField()
     coefficient = models.FloatField()
 
-    ue = models.ForeignKey(UE, on_delete=models.CASCADE)
+    ressource = models.ForeignKey(Ressources, on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return f"{self.title}"
 
