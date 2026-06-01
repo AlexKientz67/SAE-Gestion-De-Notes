@@ -132,22 +132,24 @@ def profil_etudiant(request, id):
     )
 
     # Récupérer toutes les notes de l'étudiant
-    notes = Note.objects.filter(etudiant=etudiant).select_related('examen__ressource__ue')
+    notes = Note.objects.filter(etudiant=etudiant).select_related('examen__ressource')
+    notes = notes.prefetch_related('examen__ressource__ues')
     
     # Organiser les notes par UE > Ressource
     notes_par_ue = {}
     
     for note in notes:
-        ue = note.examen.ressource.ue
         ressource = note.examen.ressource
         
-        if ue not in notes_par_ue:
-            notes_par_ue[ue] = {}
-        
-        if ressource not in notes_par_ue[ue]:
-            notes_par_ue[ue][ressource] = []
-        
-        notes_par_ue[ue][ressource].append(note)
+        # Boucler à travers les UE liées à la ressource
+        for ue in ressource.ues.all():
+            if ue not in notes_par_ue:
+                notes_par_ue[ue] = {}
+            
+            if ressource not in notes_par_ue[ue]:
+                notes_par_ue[ue][ressource] = []
+            
+            notes_par_ue[ue][ressource].append(note)
 
     return render(request, 'app/notes.html', {
         'etudiant': etudiant,

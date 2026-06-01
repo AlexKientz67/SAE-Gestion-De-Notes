@@ -70,8 +70,12 @@ class RessourceForm(forms.ModelForm):
             'nom',
             'description',
             'coefficient',
-            'ue'
+            'ues'
         ]
+        
+        widgets = {
+            'ues': forms.CheckboxSelectMultiple()
+        }
 
 
 # =========================

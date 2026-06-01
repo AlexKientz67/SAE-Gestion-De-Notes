@@ -23,7 +23,7 @@ class Ressources(models.Model):
     description = models.TextField()
     coefficient = models.FloatField()
 
-    ue = models.ForeignKey(UE, on_delete=models.SET_NULL, related_name='ressources', null=True)
+    ues = models.ManyToManyField(UE, related_name='ressources', blank=True)
 
     def __str__(self):
         return f"{self.nom}"
