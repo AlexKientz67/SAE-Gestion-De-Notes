@@ -10,6 +10,21 @@ from .models import (
 
 
 # =========================
+# Import Notes
+# =========================
+
+class ImportNotesForm(forms.Form):
+    fichier_excel = forms.FileField(
+        label='Fichier Excel (.xlsx)',
+        help_text='Format: NOM, PRENOM, NOTE1, NOTE2, ...'
+    )
+    examen = forms.ModelChoiceField(
+        queryset=Examen.objects.all(),
+        label='Sélectionner l\'examen'
+    )
+
+
+# =========================
 # Enseignants
 # =========================
 

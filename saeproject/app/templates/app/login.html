@@ -1,29 +1,70 @@
-<!DOCTYPE html>
-<html lang="fr">
+{% extends 'app/base.html' %}
 
-<head>
-    <meta charset="utf-8">
-    <title>Connexion étudiant</title>
-</head>
+{% block title %}Connexion Étudiant — GestNotes{% endblock %}
 
-<body>
+{% block content %}
 
-<h1>Connexion</h1>
+<div class="login-wrapper">
 
-<form method="post">
+    <div class="login-card">
 
-    {% csrf_token %}
 
-    {{ form.as_p }}
+        <div class="login-header">
+            <div class="login-icon">👤</div>
+            <h1>Espace Étudiant</h1>
+            <p>Entrez votre numéro étudiant pour accéder à vos notes</p>
+        </div>
 
-    <button type="submit">
-        Connexion
-    </button>
 
-    <a href="./enseignant/">Connexion Enseignant</a>
+        <form method="post" class="login-form">
+            {% csrf_token %}
 
-</form>
 
-</body>
+            {% if form.non_field_errors %}
+                <div class="form-error">
+                    {% for error in form.non_field_errors %}
+                        <span>⚠️ {{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
-</html>
+
+            <div class="form-group">
+                <label for="{{ form.numero_etudiant.id_for_label }}">
+                    Numéro étudiant
+                </label>
+                <input
+                    type="text"
+                    name="{{ form.numero_etudiant.html_name }}"
+                    id="{{ form.numero_etudiant.id_for_label }}"
+                    placeholder="Ex: E0042"
+                    class="form-input {% if form.numero_etudiant.errors %}input-error{% endif %}"
+                    value="{{ form.numero_etudiant.value|default:'' }}"
+                >
+                {% if form.numero_etudiant.errors %}
+                    <span class="field-error">{{ form.numero_etudiant.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+
+            <button type="submit" class="btn btn-primary btn-full">
+                🔓 Se connecter
+            </button>
+
+        </form>
+
+
+        <div class="login-divider">
+            <span>ou</span>
+        </div>
+
+
+        <a href="{% url 'login_enseignant' %}" class="btn btn-secondary btn-full">
+            👨‍🏫 Accès Enseignant
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

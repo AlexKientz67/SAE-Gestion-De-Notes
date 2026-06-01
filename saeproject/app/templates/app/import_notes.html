@@ -1,6 +1,6 @@
 {% extends 'app/base.html' %}
 
-{% block title %}{{ titre }} — GestNotes{% endblock %}
+{% block title %}Importer des notes — GestNotes{% endblock %}
 
 {% block navbar_extra %}
     {% if prof_id %}
@@ -15,15 +15,35 @@
 <div class="form-wrapper">
     <div class="form-card">
 
-
         <div class="form-card-header">
-            <h1>{{ titre }}</h1>
+            <h1>📊 Importer des notes depuis Excel</h1>
         </div>
 
+        <div style="background-color: #f0f8ff; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #3498db;">
+            <h3 style="margin-top: 0; color: #2c3e50;">📋 Format du fichier Excel</h3>
+            <p>Votre fichier doit contenir les colonnes suivantes:</p>
+            <ul style="margin: 10px 0;">
+                <li><strong>Colonne 1 (A):</strong> NOM de l'étudiant</li>
+                <li><strong>Colonne 2 (B):</strong> PRENOM de l'étudiant</li>
+                <li><strong>Colonne 3 (C):</strong> NOTE</li>
+            </ul>
+            <p style="margin: 10px 0; color: #666;">
+                <em>Exemple:</em><br>
+                <code style="background-color: #fff; padding: 5px; border-radius: 3px;">
+                    Dupont | Valentin | 14.5<br>
+                    Martin | Claire | 16.0<br>
+                    Bernard | Thomas | 12.5
+                </code>
+            </p>
+            <p style="margin: 15px 0 0 0;">
+                <a href="{% url 'telecharger_modele_notes' %}" class="btn btn-info" style="display: inline-block; padding: 8px 15px; background-color: #17a2b8; color: white; text-decoration: none; border-radius: 4px;">
+                    📥 Télécharger un modèle
+                </a>
+            </p>
+        </div>
 
         <form method="post" enctype="multipart/form-data" class="crud-form">
             {% csrf_token %}
-
 
             {% if form.non_field_errors %}
                 <div class="form-error">
@@ -32,7 +52,6 @@
                     {% endfor %}
                 </div>
             {% endif %}
-
 
             {% for field in form %}
                 <div class="form-group">
@@ -44,11 +63,9 @@
                         {% endif %}
                     </label>
 
-
                     <div class="field-wrapper {% if field.errors %}has-error{% endif %}">
                         {{ field }}
                     </div>
-
 
                     {% if field.errors %}
                         <span class="field-error">
@@ -56,18 +73,16 @@
                         </span>
                     {% endif %}
 
-
                     {% if field.help_text %}
-                        <span class="field-help">{{ field.help_text }}</span>
+                        <span class="field-help">{{ field.help_text|safe }}</span>
                     {% endif %}
 
                 </div>
             {% endfor %}
 
-
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">
-                    ✅ Enregistrer
+                    📤 Importer les notes
                 </button>
 
                 {% if prof_id %}

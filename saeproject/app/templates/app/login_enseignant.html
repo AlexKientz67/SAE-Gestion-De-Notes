@@ -1,29 +1,56 @@
-<!DOCTYPE html>
-<html lang="fr">
+{% extends 'app/base.html' %}
 
-<head>
-    <meta charset="utf-8">
-    <title>Connexion Enseignant</title>
-</head>
+{% block title %}Connexion Enseignant — GestNotes{% endblock %}
 
-<body>
+{% block content %}
 
-<h1>Sélectionner un enseignant</h1>
+<div class="login-wrapper">
 
-{% if enseignants %}
-    <ul>
-        {% for enseignant in enseignants %}
-            <li>
-                <a href="{% url 'enseignant' enseignant.id %}">
-                    {{ enseignant.prenom }} {{ enseignant.nom }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Aucun enseignant disponible.</p>
-{% endif %}
+    <div class="login-card login-card-large">
 
-</body>
 
-</html>
+        <div class="login-header">
+            <div class="login-icon">👨‍🏫</div>
+            <h1>Espace Enseignant</h1>
+            <p>Sélectionnez votre nom pour accéder à votre espace</p>
+        </div>
+
+
+        {% if enseignants %}
+            <ul class="enseignant-list">
+                {% for enseignant in enseignants %}
+                    <li>
+                        <a href="{% url 'enseignant' enseignant.id %}" class="enseignant-item">
+                            <div class="enseignant-avatar">
+                                {{ enseignant.prenom|first }}{{ enseignant.nom|first }}
+                            </div>
+                            <div class="enseignant-info">
+                                <span class="enseignant-name">
+                                    {{ enseignant.prenom }} {{ enseignant.nom }}
+                                </span>
+                                <span class="enseignant-role">Enseignant</span>
+                            </div>
+                            <span class="enseignant-arrow">→</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-state">
+                <span>😕</span>
+                <p>Aucun enseignant disponible</p>
+            </div>
+        {% endif %}
+
+
+        <div class="login-divider"><span>ou</span></div>
+
+        <a href="{% url 'login_etudiant' %}" class="btn btn-secondary btn-full">
+            ← Retour connexion étudiant
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,42 +1,77 @@
-<!DOCTYPE html>
-<html lang="fr">
+{% extends 'app/base.html' %}
 
-<head>
-    <meta charset="utf-8">
-    <title>Profil enseignant</title>
-</head>
+{% block title %}{{ enseignant.prenom }} {{ enseignant.nom }} — GestNotes{% endblock %}
 
-<body>
+{% block navbar_extra %}
+    <span class="navbar-user">
+        👨‍🏫 {{ enseignant.prenom }} {{ enseignant.nom }}
+    </span>
+    <a href="{% url 'login_enseignant' %}" class="btn-nav">Déconnexion</a>
+{% endblock %}
 
-<h1>Profil Enseignant</h1>
-
-<p>
-    <strong>Nom :</strong>
-    {{ enseignant.nom }}
-</p>
-
-<p>
-    <strong>Prénom :</strong>
-    {{ enseignant.prenom }}
-</p>
-
-<a href="../ajout/etudiant/">Ajouter une étudiant</a>
-<a href="../ajout/notes/?prof_id={{ enseignant.id }}">Ajouter une note</a>
-<a href="../ajout/examens/?prof_id={{ enseignant.id }}">Ajouter un examen</a>
-<a href="../ajout/ue/">Ajouter une UE</a>
-<a href="../ajout/ressource/?prof_id={{ enseignant.id }}">Ajouter une ressource</a>
+{% block content %}
 
 
+    <div class="profil-header">
+        <div class="profil-header-left">
+            <div class="profil-avatar-large">
+                {{ enseignant.prenom|first }}{{ enseignant.nom|first }}
+            </div>
+            <div>
+                <h1>{{ enseignant.prenom }} {{ enseignant.nom }}</h1>
+                <span class="badge badge-light">Enseignant</span>
+            </div>
+        </div>
+    </div>
 
-{% if etudiant.photo %}
 
-    <img
-        src="{{ etudiant.photo.url }}"
-        width="200"
-    >
+    <h2 class="section-title">⚡ Actions rapides</h2>
 
-{% endif %}
 
-</body>
+    <div class="actions-grid">
 
-</html>
+        <a href="{% url 'ajout_etudiant' %}" class="action-card">
+            <span class="action-icon">👥</span>
+            <span class="action-label">Ajouter un étudiant</span>
+            <span class="action-desc">Créer un nouveau profil</span>
+        </a>
+
+        <a href="{% url 'ajout_notes' %}?prof_id={{ enseignant.id }}" class="action-card">
+            <span class="action-icon">📝</span>
+            <span class="action-label">Saisir une note</span>
+            <span class="action-desc">Ajouter manuellement</span>
+        </a>
+
+        <a href="{% url 'import_notes' %}?prof_id={{ enseignant.id }}" class="action-card">
+            <span class="action-icon">📊</span>
+            <span class="action-label">Importer des notes</span>
+            <span class="action-desc">Via fichier Excel</span>
+        </a>
+
+        <a href="{% url 'ajout_examens' %}?prof_id={{ enseignant.id }}" class="action-card">
+            <span class="action-icon">📋</span>
+            <span class="action-label">Créer un examen</span>
+            <span class="action-desc">Définir un nouvel examen</span>
+        </a>
+
+        <a href="{% url 'ajout_ue' %}" class="action-card">
+            <span class="action-icon">📚</span>
+            <span class="action-label">Ajouter une UE</span>
+            <span class="action-desc">Unité d'enseignement</span>
+        </a>
+
+        <a href="{% url 'ajout_ressource' %}?prof_id={{ enseignant.id }}" class="action-card">
+            <span class="action-icon">🗂️</span>
+            <span class="action-label">Ajouter une ressource</span>
+            <span class="action-desc">Lier à une UE</span>
+        </a>
+
+        <a href="{% url 'ajout_enseignant' %}" class="action-card">
+            <span class="action-icon">👨‍🏫</span>
+            <span class="action-label">Ajouter un enseignant</span>
+            <span class="action-desc">Nouveau compte</span>
+        </a>
+
+    </div>
+
+{% endblock %}

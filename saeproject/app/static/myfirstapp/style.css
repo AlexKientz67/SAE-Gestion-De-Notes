@@ -1,0 +1,737 @@
+/* =============================================
+   RESET & BASE
+   ============================================= */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #F1F5F9;
+    color: #1E293B;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =============================================
+   NAVBAR
+   ============================================= */
+.navbar {
+    background: #1D4ED8;
+    color: white;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.navbar-brand {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-brand span {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.navbar-user {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.9rem;
+}
+
+.btn-nav {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.btn-nav:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+/* =============================================
+   CONTAINER
+   ============================================= */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 16px;
+    flex: 1;
+}
+
+/* =============================================
+   FOOTER
+   ============================================= */
+.footer {
+    background: #1E293B;
+    color: #94A3B8;
+    text-align: center;
+    padding: 16px;
+    font-size: 0.85rem;
+    margin-top: auto;
+}
+
+/* =============================================
+   BOUTONS
+   ============================================= */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: #1D4ED8;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1E40AF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(29,78,216,0.3);
+}
+
+.btn-secondary {
+    background: #F1F5F9;
+    color: #475569;
+    border: 2px solid #E2E8F0;
+}
+
+.btn-secondary:hover {
+    background: #E2E8F0;
+    color: #1E293B;
+}
+
+.btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+/* =============================================
+   LOGIN
+   ============================================= */
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 120px);
+}
+
+.login-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.login-card-large {
+    max-width: 520px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.login-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+}
+
+.login-header h1 {
+    font-size: 1.5rem;
+    color: #1E293B;
+    margin-bottom: 8px;
+}
+
+.login-header p {
+    color: #64748B;
+    font-size: 0.9rem;
+}
+
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: #94A3B8;
+    font-size: 0.85rem;
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #E2E8F0;
+}
+
+/* =============================================
+   LISTE ENSEIGNANTS
+   ============================================= */
+.enseignant-list {
+    list-style: none;
+    margin-bottom: 8px;
+}
+
+.enseignant-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #F8FAFC;
+    border: 2px solid #E2E8F0;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: #1E293B;
+    transition: all 0.2s;
+}
+
+.enseignant-item:hover {
+    background: #EFF6FF;
+    border-color: #3B82F6;
+    transform: translateX(4px);
+}
+
+.enseignant-avatar {
+    width: 42px;
+    height: 42px;
+    background: #1D4ED8;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.enseignant-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.enseignant-name {
+    font-weight: 600;
+    color: #1E293B;
+}
+
+.enseignant-role {
+    font-size: 0.8rem;
+    color: #94A3B8;
+}
+
+.enseignant-arrow {
+    color: #94A3B8;
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+}
+
+.enseignant-item:hover .enseignant-arrow {
+    transform: translateX(4px);
+    color: #1D4ED8;
+}
+
+/* =============================================
+   PROFIL ENSEIGNANT
+   ============================================= */
+.profil-header {
+    background: linear-gradient(135deg, #1D4ED8, #3B82F6);
+    color: white;
+    padding: 28px 32px;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profil-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profil-avatar-large {
+    width: 64px;
+    height: 64px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.profil-header h1 {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    color: #475569;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-left: 4px;
+}
+
+/* Grille actions */
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.action-card {
+    background: white;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 28px 20px;
+    text-align: center;
+    text-decoration: none;
+    color: #1E293B;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.action-card:hover {
+    border-color: #3B82F6;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(59,130,246,0.15);
+}
+
+.action-icon {
+    font-size: 2.2rem;
+}
+
+.action-label {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #1E293B;
+}
+
+.action-desc {
+    font-size: 0.8rem;
+    color: #94A3B8;
+}
+
+/* =============================================
+   NOTES ETUDIANT
+   ============================================= */
+.etudiant-header {
+    background: linear-gradient(135deg, #1D4ED8, #06B6D4);
+    color: white;
+    padding: 24px 32px;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.etudiant-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.etudiant-photo {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255,255,255,0.5);
+}
+
+.etudiant-avatar {
+    width: 72px;
+    height: 72px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.etudiant-infos h1 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.etudiant-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Bloc UE */
+.ue-block {
+    background: white;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.ue-header {
+    background: #1D4ED8;
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ue-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ue-code {
+    background: rgba(255,255,255,0.2);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: monospace;
+}
+
+.ue-nom {
+    font-weight: 600;
+}
+
+.ue-header-right {
+    display: flex;
+    gap: 8px;
+}
+
+.ue-body {
+    padding: 0;
+}
+
+/* Bloc ressource */
+.ressource-block {
+    padding: 20px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.ressource-block:last-child {
+    border-bottom: none;
+}
+
+.ressource-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #1E293B;
+}
+
+.ressource-code {
+    background: #EFF6FF;
+    color: #1D4ED8;
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: monospace;
+}
+
+.ressource-coef {
+    margin-left: auto;
+    font-size: 0.85rem;
+    color: #94A3B8;
+    font-weight: 400;
+}
+
+.ressource-desc {
+    color: #64748B;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+/* Tableau notes */
+.notes-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.notes-table th {
+    background: #F8FAFC;
+    padding: 10px 14px;
+    text-align: left;
+    color: #64748B;
+    font-weight: 600;
+    border-bottom: 2px solid #E2E8F0;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.notes-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #F8FAFC;
+    color: #1E293B;
+}
+
+.notes-table tr:last-child td {
+    border-bottom: none;
+}
+
+.notes-table tr:hover td {
+    background: #F8FAFC;
+}
+
+/* Badges notes */
+.note-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.note-high {
+    background: #DCFCE7;
+    color: #16A34A;
+}
+
+.note-mid {
+    background: #FEF9C3;
+    color: #CA8A04;
+}
+
+.note-low {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+/* =============================================
+   FORMULAIRES CRUD
+   ============================================= */
+.form-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0;
+}
+
+.form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 0;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.form-card-header {
+    background: linear-gradient(135deg, #1D4ED8, #3B82F6);
+    color: white;
+    padding: 24px 32px;
+}
+
+.form-card-header h1 {
+    font-size: 1.3rem;
+}
+
+.crud-form {
+    padding: 32px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+.required {
+    color: #EF4444;
+    margin-left: 3px;
+}
+
+/* Styles Django auto appliqués */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 2px solid #E2E8F0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    background: #FAFAFA;
+    color: #1E293B;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3B82F6;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+
+.has-error input,
+.has-error select,
+.has-error textarea {
+    border-color: #EF4444;
+}
+
+.field-error {
+    display: block;
+    color: #EF4444;
+    font-size: 0.82rem;
+    margin-top: 5px;
+}
+
+.field-help {
+    display: block;
+    color: #94A3B8;
+    font-size: 0.82rem;
+    margin-top: 5px;
+}
+
+.form-error {
+    background: #FEE2E2;
+    border: 1px solid #FECACA;
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #DC2626;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 2px solid #F1F5F9;
+}
+
+/* =============================================
+   BADGES
+   ============================================= */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.badge-light {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.badge-blue  { background: #DBEAFE; color: #1D4ED8; }
+.badge-green { background: #DCFCE7; color: #16A34A; }
+
+/* =============================================
+   EMPTY STATE
+   ============================================= */
+.empty-state {
+    text-align: center;
+    padding: 48px;
+    color: #94A3B8;
+}
+
+.empty-state span {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 12px;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .etudiant-header,
+    .profil-header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+
+    .etudiant-header-left,
+    .profil-header-left {
+        flex-direction: column;
+    }
+
+    .navbar {
+        padding: 12px 16px;
+    }
+
+    .container {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .login-card {
+        padding: 24px 20px;
+    }
+}

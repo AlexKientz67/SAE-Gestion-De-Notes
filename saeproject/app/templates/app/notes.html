@@ -1,82 +1,132 @@
-<!DOCTYPE html>
-<html lang="fr">
+{% extends 'app/base.html' %}
 
-<head>
-    <meta charset="utf-8">
-    <title>Profil étudiant</title>
-</head>
+{% block title %}Notes de {{ etudiant.prenom }} {{ etudiant.nom }}{% endblock %}
 
-<body>
+{% block navbar_extra %}
+    <a href="{% url 'login_etudiant' %}" class="btn-nav">← Déconnexion</a>
+{% endblock %}
 
-<h1>Profil étudiant</h1>
+{% block content %}
 
-<div class="etudiant-info">
-    <p>
-        <strong>Nom :</strong>
-        {{ etudiant.nom }}
-    </p>
 
-    <p>
-        <strong>Prénom :</strong>
-        {{ etudiant.prenom }}
-    </p>
+    <div class="etudiant-header">
+        <div class="etudiant-header-left">
 
-    <p>
-        <strong>Numéro étudiant :</strong>
-        {{ etudiant.numero_etudiant }}
-    </p>
+            {% if etudiant.photo %}
+                <img src="{{ etudiant.photo.url }}"
+                     alt="Photo de {{ etudiant.prenom }}"
+                     class="etudiant-photo">
+            {% else %}
+                <div class="etudiant-avatar">
+                    {{ etudiant.prenom|first }}{{ etudiant.nom|first }}
+                </div>
+            {% endif %}
 
-    <p>
-        <strong>Groupe :</strong>
-        {{ etudiant.groupe }}
-    </p>
+            <div class="etudiant-infos">
+                <h1>{{ etudiant.prenom }} {{ etudiant.nom }}</h1>
+                <div class="etudiant-meta">
+                    <span class="badge badge-light">{{ etudiant.groupe }}</span>
+                    <span class="badge badge-light">N° {{ etudiant.numero_etudiant }}</span>
+                    <span class="badge badge-light">✉️ {{ etudiant.email }}</span>
+                </div>
+            </div>
 
-    <p>
-        <strong>Email :</strong>
-        {{ etudiant.email }}
-    </p>
+        </div>
+    </div>
 
-    {% if etudiant.photo %}
-        <img
-            src="{{ etudiant.photo.url }}"
-            width="150"
-        >
-    {% endif %}
-</div>
 
-<h2>Résultats</h2>
+    <div class="notes-container">
 
-{% if notes_par_ue %}
-    <ul>
-        {% for ue, ressources in notes_par_ue.items %}
-            <li>
-                <strong>{{ ue.code }} - {{ ue.nom }}</strong> ({{ ue.semestre }}S, {{ ue.credits_ects }} ECTS)
-                <ul>
-                    {% for ressource, notes_list in ressources.items %}
-                        <li>
-                            <strong>{{ ressource.code }} - {{ ressource.nom }}</strong> (Coef: {{ ressource.coefficient }})
-                            {% if ressource.description %}
-                                <p>{{ ressource.description }}</p>
-                            {% endif %}
-                            <ul>
-                                {% for note in notes_list %}
-                                    <li>
-                                        {{ note.examen.title }} - {{ note.examen.date|date:"d/m/Y" }}
-                                        <br>
-                                        Coefficient examen: {{ note.examen.coefficient }} | Note: <strong>{{ note.note }}/20</strong>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Aucune note disponible pour cet étudiant.</p>
-{% endif %}
+        <h2 class="section-title">📊 Relevé de notes</h2>
 
-</body>
+        {% if notes_par_ue %}
 
-</html>
+            {% for ue, ressources in notes_par_ue.items %}
+
+
+                <div class="ue-block">
+
+
+                    <div class="ue-header">
+                        <div class="ue-header-left">
+                            <span class="ue-code">{{ ue.code }}</span>
+                            <span class="ue-nom">{{ ue.nom }}</span>
+                        </div>
+                        <div class="ue-header-right">
+                            <span class="badge badge-light">S{{ ue.semestre }}</span>
+                            <span class="badge badge-light">{{ ue.credits_ects }} ECTS</span>
+                        </div>
+                    </div>
+
+
+                    <div class="ue-body">
+                        {% for ressource, notes_list in ressources.items %}
+
+                            <div class="ressource-block">
+
+
+                                <div class="ressource-title">
+                                    <span class="ressource-code">{{ ressource.code }}</span>
+                                    <span>{{ ressource.nom }}</span>
+                                    <span class="ressource-coef">Coef. {{ ressource.coefficient }}</span>
+                                </div>
+
+                                {% if ressource.description %}
+                                    <p class="ressource-desc">{{ ressource.description }}</p>
+                                {% endif %}
+
+
+                                <table class="notes-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Examen</th>
+                                            <th>Date</th>
+                                            <th>Coefficient</th>
+                                            <th>Note</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for note in notes_list %}
+                                            <tr>
+                                                <td>{{ note.examen.title }}</td>
+                                                <td>{{ note.examen.date|date:"d/m/Y" }}</td>
+                                                <td>{{ note.examen.coefficient }}</td>
+                                                <td>
+                                                    {% if note.note >= 14 %}
+                                                        <span class="note-badge note-high">
+                                                            {{ note.note }}/20
+                                                        </span>
+                                                    {% elif note.note >= 10 %}
+                                                        <span class="note-badge note-mid">
+                                                            {{ note.note }}/20
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="note-badge note-low">
+                                                            {{ note.note }}/20
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+            <div class="empty-state">
+                <span>📭</span>
+                <p>Aucune note disponible pour le moment.</p>
+            </div>
+        {% endif %}
+
+    </div>
+
+{% endblock %}

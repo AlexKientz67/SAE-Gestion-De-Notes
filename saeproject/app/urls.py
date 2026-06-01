@@ -13,9 +13,9 @@ urlpatterns = [
     path('ajout/ressource/', views.ajout_ressource, name='ajout_ressource'),
     path('ajout/examens/', views.ajout_examens, name='ajout_examens'),
     path('ajout/notes/', views.ajout_notes, name='ajout_notes'),
+    path('import/notes/', views.import_notes_excel, name='import_notes'),
+    path('telecharger/modele-notes/', views.telecharger_modele_notes, name='telecharger_modele_notes'),
     path('enseignant/<int:id>', views.profil_enseignant, name='enseignant'),
-
-
 
     path('modifier/etudiant/<int:id>/', views.modifier_etudiant, name='modifier_etudiant'),
 ]
