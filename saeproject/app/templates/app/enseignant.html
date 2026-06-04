@@ -22,6 +22,11 @@
                 <span class="badge badge-light">Enseignant</span>
             </div>
         </div>
+        <div class="export-buttons">
+            <a href="{% url 'export_notes_prof_pdf' enseignant.id %}" class="btn-export btn-export-pdf" title="Exporter en PDF">
+                📄 Exporter PDF
+            </a>
+        </div>
     </div>
 
 

@@ -73,7 +73,7 @@ saeproject/
 
 3. **Installer les dépendances**
    ```bash
-   pip install django pillow
+   pip install django pillow reportlab
    ```
 
 4. **Appliquer les migrations**

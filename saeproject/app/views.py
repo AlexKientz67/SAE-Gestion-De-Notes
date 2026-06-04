@@ -4,6 +4,13 @@ from django.http import HttpResponse
 from .forms import *
 from openpyxl import load_workbook, Workbook
 import io
+from datetime import datetime
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 
 # Create your views here.
 
@@ -475,4 +482,249 @@ def telecharger_modele_etudiants(request):
     response['Content-Disposition'] = 'attachment; filename="modele_etudiants.xlsx"'
     
     workbook.save(response)
+    return response
+
+
+def export_notes_etudiant_pdf(request, id):
+    """
+    Exporte les notes d'un étudiant en PDF
+    """
+    etudiant = get_object_or_404(Etudiant, id=id)
+    
+    # Récupérer les notes de l'étudiant
+    notes = Note.objects.filter(etudiant=etudiant).select_related('examen__ressource')
+    notes = notes.prefetch_related('examen__ressource__ues')
+    
+    # Organiser les notes par UE > Ressource
+    notes_par_ue = {}
+    for note in notes:
+        ressource = note.examen.ressource
+        for ue in ressource.ues.all():
+            if ue not in notes_par_ue:
+                notes_par_ue[ue] = {}
+            if ressource not in notes_par_ue[ue]:
+                notes_par_ue[ue][ressource] = []
+            notes_par_ue[ue][ressource].append(note)
+    
+    # Créer le PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="notes_{etudiant.numero_etudiant}.pdf"'
+    
+    # Créer le document PDF
+    doc = SimpleDocTemplate(
+        response,
+        pagesize=landscape(A4),
+        rightMargin=1*cm,
+        leftMargin=1*cm,
+        topMargin=1*cm,
+        bottomMargin=1*cm
+    )
+    
+    # Styles
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=16,
+        textColor=colors.HexColor('#1a1a1a'),
+        spaceAfter=20,
+        alignment=TA_CENTER
+    )
+    ue_style = ParagraphStyle(
+        'UETitle',
+        parent=styles['Heading2'],
+        fontSize=12,
+        textColor=colors.HexColor('#0066cc'),
+        spaceAfter=10,
+        spaceBefore=10
+    )
+    ressource_style = ParagraphStyle(
+        'RessourceTitle',
+        parent=styles['Heading3'],
+        fontSize=10,
+        textColor=colors.HexColor('#333333'),
+        spaceAfter=5
+    )
+    
+    # Éléments du document
+    story = []
+    
+    # En-tête
+    title = f"RELEVÉ DE NOTES - {etudiant.prenom} {etudiant.nom}"
+    story.append(Paragraph(title, title_style))
+    
+    # Infos étudiant
+    info_text = f"<b>N° Étudiant:</b> {etudiant.numero_etudiant} | <b>Groupe:</b> {etudiant.groupe} | <b>Email:</b> {etudiant.email}"
+    story.append(Paragraph(info_text, styles['Normal']))
+    
+    info_text2 = f"<b>Généré le:</b> {datetime.now().strftime('%d/%m/%Y à %H:%M')}"
+    story.append(Paragraph(info_text2, styles['Normal']))
+    story.append(Spacer(1, 0.5*cm))
+    
+    # Tableau des notes
+    if notes_par_ue:
+        for ue, ressources in notes_par_ue.items():
+            # Titre de l'UE
+            ue_title = f"{ue.code} - {ue.nom} (S{ue.semestre}, {ue.credits_ects} ECTS)"
+            story.append(Paragraph(ue_title, ue_style))
+            
+            # Pour chaque ressource
+            for ressource, notes_list in ressources.items():
+                ressource_title = f"{ressource.code} - {ressource.nom} (Coef. {ressource.coefficient})"
+                story.append(Paragraph(ressource_title, ressource_style))
+                
+                # Tableau des notes
+                data = [['Examen', 'Date', 'Coefficient', 'Note']]
+                
+                for note in notes_list:
+                    data.append([
+                        note.examen.title,
+                        note.examen.date.strftime('%d/%m/%Y'),
+                        str(note.examen.coefficient),
+                        f"{note.note}/20"
+                    ])
+                
+                table = Table(data, colWidths=[6*cm, 3*cm, 2*cm, 2*cm])
+                table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0066cc')),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                    ('FONTSIZE', (0, 0), (-1, 0), 9),
+                    ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                    ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                    ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+                    ('FONTSIZE', (0, 1), (-1, -1), 8),
+                    ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0f0f0')])
+                ]))
+                
+                story.append(table)
+                story.append(Spacer(1, 0.3*cm))
+    else:
+        story.append(Paragraph("Aucune note disponible", styles['Normal']))
+    
+    # Générer le PDF
+    doc.build(story)
+    return response
+
+
+def export_notes_prof_pdf(request, id):
+    """
+    Exporte toutes les notes gérées par un prof en PDF
+    """
+    enseignant = get_object_or_404(Enseignants, id=id)
+    
+    # Récupérer les examens du prof (via les ressources)
+    # Pour simplifier, on prend toutes les notes liées aux examens
+    notes = Note.objects.select_related('examen__ressource', 'etudiant')
+    notes = notes.prefetch_related('examen__ressource__ues')
+    
+    # Organiser par UE > Ressource > Examen
+    data_par_ue = {}
+    for note in notes:
+        ressource = note.examen.ressource
+        for ue in ressource.ues.all():
+            if ue not in data_par_ue:
+                data_par_ue[ue] = {}
+            if ressource not in data_par_ue[ue]:
+                data_par_ue[ue][ressource] = {}
+            if note.examen not in data_par_ue[ue][ressource]:
+                data_par_ue[ue][ressource][note.examen] = []
+            data_par_ue[ue][ressource][note.examen].append(note)
+    
+    # Créer le PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="notes_prof_{enseignant.id}.pdf"'
+    
+    doc = SimpleDocTemplate(
+        response,
+        pagesize=landscape(A4),
+        rightMargin=1*cm,
+        leftMargin=1*cm,
+        topMargin=1*cm,
+        bottomMargin=1*cm
+    )
+    
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=14,
+        textColor=colors.HexColor('#1a1a1a'),
+        spaceAfter=10,
+        alignment=TA_CENTER
+    )
+    ue_style = ParagraphStyle(
+        'UETitle',
+        parent=styles['Heading2'],
+        fontSize=11,
+        textColor=colors.HexColor('#0066cc'),
+        spaceAfter=8,
+        spaceBefore=8
+    )
+    ressource_style = ParagraphStyle(
+        'RessourceTitle',
+        parent=styles['Heading3'],
+        fontSize=9,
+        textColor=colors.HexColor('#333333'),
+        spaceAfter=3
+    )
+    
+    story = []
+    
+    # En-tête
+    title = f"RELEVÉ DES NOTES - {enseignant.prenom} {enseignant.nom}"
+    story.append(Paragraph(title, title_style))
+    
+    info_text = f"<b>Généré le:</b> {datetime.now().strftime('%d/%m/%Y à %H:%M')}"
+    story.append(Paragraph(info_text, styles['Normal']))
+    story.append(Spacer(1, 0.3*cm))
+    
+    # Contenu
+    if data_par_ue:
+        for ue in sorted(data_par_ue.keys(), key=lambda x: (x.semestre, x.code)):
+            ressources = data_par_ue[ue]
+            ue_title = f"{ue.code} - {ue.nom} (S{ue.semestre})"
+            story.append(Paragraph(ue_title, ue_style))
+            
+            for ressource in sorted(ressources.keys(), key=lambda x: x.code):
+                examens = ressources[ressource]
+                ressource_title = f"{ressource.code} - {ressource.nom} (Coef. {ressource.coefficient})"
+                story.append(Paragraph(ressource_title, ressource_style))
+                
+                for examen in sorted(examens.keys(), key=lambda x: x.title):
+                    notes_list = examens[examen]
+                    
+                    # Tableau
+                    data = [[f'Examen: {examen.title}', 'Étudiant', 'Note']]
+                    
+                    for note in sorted(notes_list, key=lambda x: (x.etudiant.nom, x.etudiant.prenom)):
+                        data.append([
+                            examen.date.strftime('%d/%m/%Y'),
+                            f"{note.etudiant.prenom} {note.etudiant.nom}",
+                            f"{note.note}/20"
+                        ])
+                    
+                    table = Table(data, colWidths=[4*cm, 5*cm, 2*cm])
+                    table.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0066cc')),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                        ('FONTSIZE', (0, 0), (-1, 0), 8),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+                        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+                        ('FONTSIZE', (0, 1), (-1, -1), 7),
+                        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0f0f0')])
+                    ]))
+                    
+                    story.append(table)
+                    story.append(Spacer(1, 0.2*cm))
+                story.append(Spacer(1, 0.1*cm))
+            story.append(Spacer(1, 0.2*cm))
+    else:
+        story.append(Paragraph("Aucune note disponible", styles['Normal']))
+    
+    doc.build(story)
     return response

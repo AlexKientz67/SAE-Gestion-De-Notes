@@ -697,6 +697,42 @@ body {
     margin-bottom: 12px;
 }
 
+
+/* =============================================
+   EXPORT BUTTONS
+   ============================================= */
+.export-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-export:hover {
+    background: rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-export-pdf:hover {
+    background: rgba(229,57,53,0.8);
+}
+
 /* =============================================
    RESPONSIVE
    ============================================= */
