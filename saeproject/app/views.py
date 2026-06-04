@@ -324,3 +324,155 @@ def telecharger_modele_notes(request):
     
     workbook.save(response)
     return response
+
+
+def import_etudiants_excel(request):
+    """
+    Import des étudiants via un fichier Excel
+    Format attendu: NUMERO_ETUDIANT, NOM, PRENOM, GROUPE, EMAIL
+    """
+    if request.method == 'POST':
+        form = ImportEtudiantsForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                fichier = request.FILES['fichier_excel']
+                
+                # Lire le fichier Excel
+                file_data = fichier.read()
+                workbook = load_workbook(io.BytesIO(file_data))
+                worksheet = workbook.active
+                
+                etudiants_crees = 0
+                etudiants_updates = 0
+                etudiants_echoues = 0
+                erreurs = []
+                
+                # Traiter chaque ligne
+                for row_idx, row in enumerate(worksheet.iter_rows(values_only=True), 1):
+                    if row_idx == 1:  # Ignorer la première ligne si c'est l'en-tête
+                        if row[0] and row[0].upper() in ['NUMERO_ETUDIANT', 'NUMERO', 'NUMBER']:
+                            continue
+                    
+                    try:
+                        if not row or not row[0]:  # Ignorer les lignes vides
+                            continue
+                        
+                        numero_etudiant = str(row[0]).strip() if row[0] else None
+                        nom = row[1].strip() if len(row) > 1 and row[1] else None
+                        prenom = row[2].strip() if len(row) > 2 and row[2] else None
+                        groupe = row[3].strip() if len(row) > 3 and row[3] else None
+                        email = row[4].strip() if len(row) > 4 and row[4] else None
+                        
+                        if not numero_etudiant or not nom or not prenom or not groupe or not email:
+                            erreurs.append(f"Ligne {row_idx}: Données incomplètes (tous les champs sont obligatoires)")
+                            etudiants_echoues += 1
+                            continue
+                        
+                        # Vérifier que l'email est valide
+                        if '@' not in email:
+                            erreurs.append(f"Ligne {row_idx}: Email invalide pour {nom} {prenom}")
+                            etudiants_echoues += 1
+                            continue
+                        
+                        # Créer ou mettre à jour l'étudiant
+                        etudiant, created = Etudiant.objects.update_or_create(
+                            numero_etudiant=numero_etudiant,
+                            defaults={
+                                'nom': nom,
+                                'prenom': prenom,
+                                'groupe': groupe,
+                                'email': email
+                            }
+                        )
+                        
+                        if created:
+                            etudiants_crees += 1
+                        else:
+                            etudiants_updates += 1
+                    
+                    except Exception as e:
+                        erreurs.append(f"Ligne {row_idx}: Erreur - {str(e)}")
+                        etudiants_echoues += 1
+                
+                # Afficher les résultats
+                if etudiants_crees > 0:
+                    messages.success(request, f"✓ {etudiants_crees} étudiant(s) créé(s) avec succès!")
+                if etudiants_updates > 0:
+                    messages.success(request, f"✓ {etudiants_updates} étudiant(s) mis à jour!")
+                if erreurs:
+                    for erreur in erreurs[:10]:  # Afficher max 10 erreurs
+                        messages.warning(request, f"⚠ {erreur}")
+                    if len(erreurs) > 10:
+                        messages.warning(request, f"... et {len(erreurs) - 10} autre(s) erreur(s)")
+                
+                return redirect('import_etudiants')
+            
+            except Exception as e:
+                messages.error(request, f"Erreur lors du traitement du fichier: {str(e)}")
+    else:
+        form = ImportEtudiantsForm()
+    
+    return render(request, 'app/import_etudiants.html', {
+        'form': form
+    })
+
+
+def telecharger_modele_etudiants(request):
+    """
+    Télécharge un modèle de fichier Excel pour l'import d'étudiants
+    """
+    # Créer un nouveau classeur
+    workbook = Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Etudiants"
+    
+    # Ajouter les en-têtes
+    worksheet['A1'] = "NUMERO_ETUDIANT"
+    worksheet['B1'] = "NOM"
+    worksheet['C1'] = "PRENOM"
+    worksheet['D1'] = "GROUPE"
+    worksheet['E1'] = "EMAIL"
+    
+    # Formater les en-têtes
+    from openpyxl.styles import Font, PatternFill
+    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+    
+    for cell in ['A1', 'B1', 'C1', 'D1', 'E1']:
+        worksheet[cell].fill = header_fill
+        worksheet[cell].font = header_font
+    
+    # Ajouter des lignes d'exemple
+    worksheet['A2'] = "E20001"
+    worksheet['B2'] = "Dupont"
+    worksheet['C2'] = "Valentin"
+    worksheet['D2'] = "G1"
+    worksheet['E2'] = "valentin.dupont@example.com"
+    
+    worksheet['A3'] = "E20002"
+    worksheet['B3'] = "Martin"
+    worksheet['C3'] = "Claire"
+    worksheet['D3'] = "G1"
+    worksheet['E3'] = "claire.martin@example.com"
+    
+    worksheet['A4'] = "E20003"
+    worksheet['B4'] = "Bernard"
+    worksheet['C4'] = "Thomas"
+    worksheet['D4'] = "G2"
+    worksheet['E4'] = "thomas.bernard@example.com"
+    
+    # Ajuster la largeur des colonnes
+    worksheet.column_dimensions['A'].width = 18
+    worksheet.column_dimensions['B'].width = 20
+    worksheet.column_dimensions['C'].width = 20
+    worksheet.column_dimensions['D'].width = 15
+    worksheet.column_dimensions['E'].width = 30
+    
+    # Créer une réponse HTTP avec le fichier Excel
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="modele_etudiants.xlsx"'
+    
+    workbook.save(response)
+    return response

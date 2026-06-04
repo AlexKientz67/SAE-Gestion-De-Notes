@@ -25,6 +25,17 @@ class ImportNotesForm(forms.Form):
 
 
 # =========================
+# Import Etudiants
+# =========================
+
+class ImportEtudiantsForm(forms.Form):
+    fichier_excel = forms.FileField(
+        label='Fichier Excel (.xlsx)',
+        help_text='Format: NUMERO_ETUDIANT, NOM, PRENOM, GROUPE, EMAIL'
+    )
+
+
+# =========================
 # Enseignants
 # =========================
 

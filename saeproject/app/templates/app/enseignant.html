@@ -36,6 +36,12 @@
             <span class="action-desc">Créer un nouveau profil</span>
         </a>
 
+        <a href="{% url 'import_etudiants' %}" class="action-card">
+            <span class="action-icon">📥</span>
+            <span class="action-label">Importer des étudiants</span>
+            <span class="action-desc">Via fichier Excel</span>
+        </a>
+
         <a href="{% url 'ajout_notes' %}?prof_id={{ enseignant.id }}" class="action-card">
             <span class="action-icon">📝</span>
             <span class="action-label">Saisir une note</span>

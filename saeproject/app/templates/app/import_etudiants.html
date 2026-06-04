@@ -1,23 +1,15 @@
 {% extends 'app/base.html' %}
 
-{% block title %}Importer des notes — GestNotes{% endblock %}
+{% block title %}Importer des étudiants — GestNotes{% endblock %}
 
 {% block navbar_extra %}
-    {% if prof_id %}
-        <a href="{% url 'enseignant' prof_id %}" class="btn-nav">← Retour</a>
-    {% else %}
-        <a href="/app/" class="btn-nav">← Retour</a>
-    {% endif %}
+    <a href="/app/" class="btn-nav">← Retour</a>
 {% endblock %}
 
 {% block content %}
 
 <div class="form-wrapper">
     <div class="form-card">
-
-        <div class="form-card-header">
-            <h1>📊 Importer des notes depuis Excel</h1>
-        </div>
 
         <form method="post" enctype="multipart/form-data" class="crud-form">
             {% csrf_token %}
@@ -59,22 +51,16 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">
-                    Importer les notes
+                    Importer les étudiants
                 </button>
 
-                <a href="{% url 'telecharger_modele_notes' %}" class="btn btn-info" style="display: inline-block; padding: 8px 15px; background-color: #17a2b8; color: white; text-decoration: none; border-radius: 4px;">
+                <a href="{% url 'telecharger_modele_etudiants' %}" class="btn btn-info" style="display: inline-block; padding: 8px 15px; background-color: #17a2b8; color: white; text-decoration: none; border-radius: 4px;">
                     Télécharger un modèle
                 </a>
 
-                {% if prof_id %}
-                    <a href="{% url 'enseignant' prof_id %}" class="btn btn-secondary">
-                        Annuler
-                    </a>
-                {% else %}
-                    <a href="/app/" class="btn btn-secondary">
-                        Annuler
-                    </a>
-                {% endif %}
+                <a href="/app/" class="btn btn-secondary">
+                    Annuler
+                </a>
             </div>
 
         </form>
