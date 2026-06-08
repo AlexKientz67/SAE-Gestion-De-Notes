@@ -130,3 +130,8 @@ STATIC_URL = '/static/'
 # Media files (User uploads)
 MEDIA_URL = '/etudiants/'
 MEDIA_ROOT = BASE_DIR / 'etudiants'
+
+import os
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'staticfiles')
