@@ -34,7 +34,7 @@ class Etudiant(models.Model):
     prenom = models.CharField(max_length=100)
     groupe = models.CharField(max_length=20)
 
-    photo = models.ImageField(upload_to='etudiants', null=True, blank=True)
+    photo = models.ImageField(upload_to='', null=True, blank=True)
     email = models.EmailField(unique=True)
 
     def __str__(self):
