@@ -22,4 +22,6 @@ urlpatterns = [
     path('enseignant/<int:id>', views.profil_enseignant, name='enseignant'),
 
     path('modifier/etudiant/<int:id>/', views.modifier_etudiant, name='modifier_etudiant'),
+    path('logout/', views.logout_enseignant, name='logout_enseignant'),
+
 ]

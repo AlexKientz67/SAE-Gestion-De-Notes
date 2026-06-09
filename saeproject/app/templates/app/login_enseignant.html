@@ -5,43 +5,49 @@
 {% block content %}
 
 <div class="login-wrapper">
-
-    <div class="login-card login-card-large">
-
+    <div class="login-card">
 
         <div class="login-header">
             <div class="login-icon">👨‍🏫</div>
             <h1>Espace Enseignant</h1>
-            <p>Sélectionnez votre nom pour accéder à votre espace</p>
+            <p>Connectez-vous avec votre identifiant</p>
         </div>
 
+        <form method="post" class="login-form">
+            {% csrf_token %}
 
-        {% if enseignants %}
-            <ul class="enseignant-list">
-                {% for enseignant in enseignants %}
-                    <li>
-                        <a href="{% url 'enseignant' enseignant.id %}" class="enseignant-item">
-                            <div class="enseignant-avatar">
-                                {{ enseignant.prenom|first }}{{ enseignant.nom|first }}
-                            </div>
-                            <div class="enseignant-info">
-                                <span class="enseignant-name">
-                                    {{ enseignant.prenom }} {{ enseignant.nom }}
-                                </span>
-                                <span class="enseignant-role">Enseignant</span>
-                            </div>
-                            <span class="enseignant-arrow">→</span>
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <div class="empty-state">
-                <span>😕</span>
-                <p>Aucun enseignant disponible</p>
+            {% if form.non_field_errors %}
+                <div class="form-error">
+                    {% for error in form.non_field_errors %}
+                        <p>⚠️ {{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">
+                    Nom d'utilisateur
+                </label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <span class="field-error">{{ form.username.errors.0 }}</span>
+                {% endif %}
             </div>
-        {% endif %}
 
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">
+                    Mot de passe
+                </label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <span class="field-error">{{ form.password.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                🔓 Se connecter
+            </button>
+        </form>
 
         <div class="login-divider"><span>ou</span></div>
 
@@ -50,7 +56,6 @@
         </a>
 
     </div>
-
 </div>
 
 {% endblock %}

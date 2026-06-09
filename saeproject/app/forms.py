@@ -7,6 +7,8 @@ from .models import (
     Examen,
     Note
 )
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
 
 
 # =========================
@@ -152,3 +154,52 @@ class LoginEtudiantForm(forms.Form):
         max_length=20,
         label="Numéro étudiant"
     )
+# Login Enseignant
+class LoginEnseignantForm(AuthenticationForm):
+    username = forms.CharField(
+        label="Nom d'utilisateur",
+        max_length=150
+    )
+    password = forms.CharField(
+        label="Mot de passe",
+        widget=forms.PasswordInput
+    )
+
+# Création d'un enseignant avec compte
+class EnseignantCreationForm(forms.ModelForm):
+    username = forms.CharField(
+        label="Nom d'utilisateur",
+        max_length=150,
+        help_text="Servira pour la connexion"
+    )
+    password = forms.CharField(
+        label="Mot de passe",
+        widget=forms.PasswordInput,
+        min_length=6
+    )
+    password_confirm = forms.CharField(
+        label="Confirmer le mot de passe",
+        widget=forms.PasswordInput
+    )
+
+    class Meta:
+        model = Enseignants
+        fields = ['nom', 'prenom']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        pwd = cleaned_data.get('password')
+        pwd_confirm = cleaned_data.get('password_confirm')
+
+        if pwd and pwd_confirm and pwd != pwd_confirm:
+            raise forms.ValidationError(
+                "Les mots de passe ne correspondent pas."
+            )
+
+        username = cleaned_data.get('username')
+        if username and User.objects.filter(username=username).exists():
+            raise forms.ValidationError(
+                "Ce nom d'utilisateur est déjà pris."
+            )
+
+        return cleaned_data

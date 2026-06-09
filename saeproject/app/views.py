@@ -11,6 +11,10 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib import messages
 
 # Create your views here.
 
@@ -728,3 +732,68 @@ def export_notes_prof_pdf(request, id):
     
     doc.build(story)
     return response
+# ===== LOGIN ENSEIGNANT =====
+def login_enseignant(request):
+    form = LoginEnseignantForm(request, data=request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                # Vérifier qu'il est bien lié à un Enseignant
+                if hasattr(user, 'enseignant'):
+                    login(request, user)
+                    return redirect('enseignant', id=user.enseignant.id)
+                else:
+                    form.add_error(None, "Ce compte n'est pas un compte enseignant.")
+            else:
+                form.add_error(None, "Identifiants incorrects.")
+
+    return render(request, 'app/login_enseignant.html', {'form': form})
+
+
+# ===== LOGOUT =====
+def logout_enseignant(request):
+    logout(request)
+    messages.success(request, "Vous avez été déconnecté.")
+    return redirect('login_etudiant')
+
+
+# ===== PROFIL ENSEIGNANT (protégé) =====
+@login_required(login_url='login_enseignant')
+def profil_enseignant(request, id):
+    enseignant = get_object_or_404(Enseignants, id=id)
+
+    # Sécurité : un prof ne peut voir que son propre profil
+    if not hasattr(request.user, 'enseignant') or request.user.enseignant.id != enseignant.id:
+        messages.error(request, "Accès refusé.")
+        return redirect('login_enseignant')
+
+    return render(request, 'app/enseignant.html', {'enseignant': enseignant})
+
+
+# ===== AJOUT ENSEIGNANT (avec création compte User) =====
+def ajout_enseignant(request):
+    form = EnseignantCreationForm(request.POST or None)
+
+    if form.is_valid():
+        # Créer l'utilisateur Django
+        user = User.objects.create_user(
+            username=form.cleaned_data['username'],
+            password=form.cleaned_data['password']
+        )
+        # Créer l'enseignant lié
+        enseignant = form.save(commit=False)
+        enseignant.user = user
+        enseignant.save()
+
+        messages.success(request, f"Enseignant {enseignant.prenom} {enseignant.nom} créé !")
+        return redirect('login_enseignant')
+
+    return render(request, 'app/form.html', {
+        'form': form,
+        'titre': 'Ajouter un enseignant'
+    })

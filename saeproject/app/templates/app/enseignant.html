@@ -6,8 +6,11 @@
     <span class="navbar-user">
         👨‍🏫 {{ enseignant.prenom }} {{ enseignant.nom }}
     </span>
-    <a href="{% url 'login_enseignant' %}" class="btn-nav">Déconnexion</a>
+    <a href="{% url 'logout_enseignant' %}" class="btn-nav">
+        🚪 Déconnexion
+    </a>
 {% endblock %}
+
 
 {% block content %}
 
