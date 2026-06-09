@@ -1,4 +1,5 @@
 {% extends 'app/base.html' %}
+{% load static %}
 
 {% block title %}Importer des étudiants — GestNotes{% endblock %}
 
@@ -54,7 +55,7 @@
                     Importer les étudiants
                 </button>
 
-                <a href="{% url 'telecharger_modele_etudiants' %}" class="btn btn-info" style="display: inline-block; padding: 8px 15px; background-color: #17a2b8; color: white; text-decoration: none; border-radius: 4px;">
+                <a href="{% static 'modele_etudiants.xlsx' %}" class="btn btn-info" style="display: inline-block; padding: 8px 15px; background-color: #17a2b8; color: white; text-decoration: none; border-radius: 4px;" download>
                     Télécharger un modèle
                 </a>
 

@@ -286,57 +286,6 @@ def import_notes_excel(request):
     })
 
 
-def telecharger_modele_notes(request):
-    """
-    Télécharge un modèle de fichier Excel pour l'import de notes
-    """
-    # Créer un nouveau classeur
-    workbook = Workbook()
-    worksheet = workbook.active
-    worksheet.title = "Notes"
-    
-    # Ajouter les en-têtes
-    worksheet['A1'] = "NOM"
-    worksheet['B1'] = "PRENOM"
-    worksheet['C1'] = "NOTE"
-    
-    # Formater les en-têtes
-    from openpyxl.styles import Font, PatternFill
-    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
-    header_font = Font(bold=True, color="FFFFFF")
-    
-    for cell in ['A1', 'B1', 'C1']:
-        worksheet[cell].fill = header_fill
-        worksheet[cell].font = header_font
-    
-    # Ajouter des lignes d'exemple
-    worksheet['A2'] = "Dupont"
-    worksheet['B2'] = "Valentin"
-    worksheet['C2'] = 14.5
-    
-    worksheet['A3'] = "Martin"
-    worksheet['B3'] = "Claire"
-    worksheet['C3'] = 16.0
-    
-    worksheet['A4'] = "Bernard"
-    worksheet['B4'] = "Thomas"
-    worksheet['C4'] = 12.5
-    
-    # Ajuster la largeur des colonnes
-    worksheet.column_dimensions['A'].width = 20
-    worksheet.column_dimensions['B'].width = 20
-    worksheet.column_dimensions['C'].width = 15
-    
-    # Créer une réponse HTTP avec le fichier Excel
-    response = HttpResponse(
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
-    response['Content-Disposition'] = 'attachment; filename="modele_notes.xlsx"'
-    
-    workbook.save(response)
-    return response
-
-
 def import_etudiants_excel(request):
     """
     Import des étudiants via un fichier Excel
@@ -426,67 +375,6 @@ def import_etudiants_excel(request):
     return render(request, 'app/import_etudiants.html', {
         'form': form
     })
-
-
-def telecharger_modele_etudiants(request):
-    """
-    Télécharge un modèle de fichier Excel pour l'import d'étudiants
-    """
-    # Créer un nouveau classeur
-    workbook = Workbook()
-    worksheet = workbook.active
-    worksheet.title = "Etudiants"
-    
-    # Ajouter les en-têtes
-    worksheet['A1'] = "NUMERO_ETUDIANT"
-    worksheet['B1'] = "NOM"
-    worksheet['C1'] = "PRENOM"
-    worksheet['D1'] = "GROUPE"
-    worksheet['E1'] = "EMAIL"
-    
-    # Formater les en-têtes
-    from openpyxl.styles import Font, PatternFill
-    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
-    header_font = Font(bold=True, color="FFFFFF")
-    
-    for cell in ['A1', 'B1', 'C1', 'D1', 'E1']:
-        worksheet[cell].fill = header_fill
-        worksheet[cell].font = header_font
-    
-    # Ajouter des lignes d'exemple
-    worksheet['A2'] = "E20001"
-    worksheet['B2'] = "Dupont"
-    worksheet['C2'] = "Valentin"
-    worksheet['D2'] = "G1"
-    worksheet['E2'] = "valentin.dupont@example.com"
-    
-    worksheet['A3'] = "E20002"
-    worksheet['B3'] = "Martin"
-    worksheet['C3'] = "Claire"
-    worksheet['D3'] = "G1"
-    worksheet['E3'] = "claire.martin@example.com"
-    
-    worksheet['A4'] = "E20003"
-    worksheet['B4'] = "Bernard"
-    worksheet['C4'] = "Thomas"
-    worksheet['D4'] = "G2"
-    worksheet['E4'] = "thomas.bernard@example.com"
-    
-    # Ajuster la largeur des colonnes
-    worksheet.column_dimensions['A'].width = 18
-    worksheet.column_dimensions['B'].width = 20
-    worksheet.column_dimensions['C'].width = 20
-    worksheet.column_dimensions['D'].width = 15
-    worksheet.column_dimensions['E'].width = 30
-    
-    # Créer une réponse HTTP avec le fichier Excel
-    response = HttpResponse(
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
-    response['Content-Disposition'] = 'attachment; filename="modele_etudiants.xlsx"'
-    
-    workbook.save(response)
-    return response
 
 
 def export_notes_etudiant_pdf(request, id):
