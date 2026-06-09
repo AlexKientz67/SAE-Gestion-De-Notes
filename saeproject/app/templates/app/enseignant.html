@@ -38,7 +38,7 @@
 
     <div class="actions-grid">
 
-        <a href="{% url 'ajout_etudiant' %}" class="action-card">
+        <a href="{% url 'ajout_etudiant' %}?prof_id={{ enseignant.id }}" class="action-card">
             <span class="action-icon">👥</span>
             <span class="action-label">Ajouter un étudiant</span>
             <span class="action-desc">Créer un nouveau profil</span>

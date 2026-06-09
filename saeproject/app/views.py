@@ -19,6 +19,7 @@ from django.contrib import messages
 # Create your views here.
 
 def ajout_etudiant(request):
+    prof_id = request.GET.get('prof_id')
     form = EtudiantForm(
         request.POST or None,
         request.FILES or None,
@@ -26,9 +27,11 @@ def ajout_etudiant(request):
 
     if form.is_valid():
         form.save()
+        if prof_id:
+            return redirect('enseignant', id=prof_id)
         return redirect('/')
 
-    return render(request,'app/form.html', {'form':form, 'titre': 'Ajouter un étudiant'})
+    return render(request,'app/form.html', {'form':form, 'titre': 'Ajouter un étudiant', 'prof_id': prof_id})
 
 def ajout_enseignant(request):
     form = EnseignantForm(
@@ -42,12 +45,15 @@ def ajout_enseignant(request):
     return render(request, 'app/form.html', {'form':form, 'titre': 'Ajouter un enseignant'})
 
 def ajout_ue(request):
+    prof_id = request.GET.get('prof_id')
     form = UEForm(
         request.POST or None,
     )
     if form.is_valid():
         form.save()
-        return redirect('/app')
+        if prof_id:
+            return redirect('enseignant', id=prof_id)
+        return redirect('/')
     return render(request, 'app/form.html', {'form':form, 'titre': 'Ajouter un ue'})
 
 def ajout_ressource(request):
@@ -87,7 +93,7 @@ def ajout_notes(request):
     return render(request, 'app/form.html', {'form':form, 'titre': 'Ajout un note', 'prof_id': prof_id})
 
 def modifier_etudiant(request, id):
-
+    prof_id = request.GET.get('prof_id')
     etudiant = get_object_or_404(
         Etudiant,
         id=id
@@ -101,11 +107,14 @@ def modifier_etudiant(request, id):
 
     if form.is_valid():
         form.save()
+        if prof_id:
+            return redirect('enseignant', id=prof_id)
         return redirect('/')
 
     return render(request, 'form.html', {
         'form': form,
-        'titre': 'Modifier étudiant'
+        'titre': 'Modifier étudiant',
+        'prof_id': prof_id
     })
 
 
