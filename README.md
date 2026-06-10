@@ -1,4 +1,5 @@
 # SAE - Gestion de notes
+## Sitovskyi Illia - Kientz Alexandre - Altinok Quentin
 
 ## Comment installer ?
 
